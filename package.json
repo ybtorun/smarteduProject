@@ -6,6 +6,10 @@
   "scripts": {
     "start": "nodemon app.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ybtorun/smarteduProject.git"
+  },
   "keywords": [
     "education",
     "portal",
