@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 
 const User = require('../models/User');
 const Category = require('../models/Category');
+const Course = require('../models/Course');
 
 //create user
 exports.createUser = async (req, res) => {
@@ -30,13 +31,13 @@ exports.loginUser = async (req, res) => {
     const user = await User.findOne({ email }); //email:email
     if (user) {
       bcrypt.compare(password, user.password, (err, same) => {
-        if (same) {
+
           //user session
           req.session.userID = user._id; //req.session altında userID adında değişken tanımladık ve buna login olan user'ın id değerini atadık
 
           res.status(200).redirect('/users/dashboard');
           //console.log(email,req.session.userID);
-        }
+
       });
     }
   } catch (error) {
@@ -56,13 +57,15 @@ exports.logoutUser = (req, res) => {
 
 //dashboard page
 exports.getDashboardPage = async (req, res) => {
-  const user = await User.findOne({_id: req.session.userID});
+  const user = await User.findOne({_id: req.session.userID}).populate('courses');//ilgili öğrencinin kurslarına gitmek için birleştirdik
   const categories = await Category.find(); //course oluşturuken category bilgisini de seçtirmek için çağırdık
+  const courses = await Course.find({ user: req.session.userID }); //dashboard sayfasında her öğretmenin kendi kursunu görmesi
 
   res.status(200).render('dashboard', {
     page_name: 'dashboard',
     user,
-    categories
+    categories,
+    courses
   });
 };
 

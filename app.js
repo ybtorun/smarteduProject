@@ -22,7 +22,7 @@ app.set('view engine', 'ejs');
 
 
 //Global Variable
-global.userIN = null;
+global.userIN = null; //userIN adında global bir değişken oluşturduk
 
 
 //Middlewares
@@ -33,7 +33,7 @@ app.use(session({
   secret: 'my_keyboard_cat',
   resave: false,
   saveUninitialized: true,
-  store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/smartedu-db' }) //session bilgisini mongodb de tutma
+  store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/smartedu-db' }) //session bilgisini mongodb de tutma (mongostore npm)
 }));
 
 //Routes
@@ -41,10 +41,11 @@ app.use('*' , (req,res,next) => {
   userIN = req.session.userID;
   next();
 });
-app.use('/', pageRoute);
+app.use('/', pageRoute);  
 app.use('/courses', courseRoute);
 app.use('/categories', categoryRoute);
 app.use('/users', userRoute);
+
 
 const port = 3000;
 app.listen(port, () => {

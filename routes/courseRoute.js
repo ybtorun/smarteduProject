@@ -11,6 +11,8 @@ router.route('/').get(courseController.getAllCourses);
 // router.route('/:id').get(courseController.getOne); //postman test amaçlı yapıldı
 
 router.route('/:slug').get(courseController.getCourse);
+router.route('/enroll').post(courseController.enrollCourse);
+router.route('/release').post(courseController.releaseCourse);
 
 
 

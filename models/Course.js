@@ -11,7 +11,7 @@ const CourseSchema = new Schema({
   description: {
     type: String,
     required: true,
-    trim: true,
+    trim: true, //baştaki ve sondaki boşlukları kaldırmaya yarıyor
   },
   createdAt: {
     type: Date,
@@ -35,7 +35,7 @@ const CourseSchema = new Schema({
 CourseSchema.pre('validate', function(next){
   this.slug = slugify(this.name, {
     lower: true, //hepsini küçük harf yap
-    string: true, 
+    string: true, //string dışındaki karakterleri yoksay
   });
   next();
 })
