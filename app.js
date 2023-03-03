@@ -38,7 +38,7 @@ app.use(session({
 }));
 app.use(flash());
 app.use((req, res, next )=> {
-  res.locals.flashMessages =req.flash();
+  res.locals.flashMessages =req.flash() //req.flashı sayfada yakalamak için flashMessages değişkenini tanımladık
   next();
 });
 

@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { validationResult } = require('express-validator');
 
 const User = require('../models/User');
 const Category = require('../models/Category');
@@ -8,18 +9,28 @@ const Course = require('../models/Course');
 exports.createUser = async (req, res) => {
   try {
     const user = await User.create(req.body);
+    req.flash('success', `${user.name} has been created succesfully`);
+    res.status(201).redirect('/login');
 
     // res.status(201).json({
     //   status: 'success',
     //   user,
     // });
 
-    res.status(201).redirect('/login');
+
   } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      error,
-    });
+    const errors = validationResult(req);
+    // console.log(errors.array()[0].msg);
+
+    for(i = 0; i < errors.array().length ; i++ ) 
+    {
+      req.flash('error',`${errors.array()[i].msg}`);//userRoute da bulunan arrayi referans alarak girilmeyen değerlerin mesajını yazdırıyoruz.
+    }
+    res.status(400).redirect('/register');
+    // res.status(400).json({
+    //   status: 'fail',
+    //   error,
+    // });
   }
 };
 
@@ -29,22 +40,31 @@ exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
     //mongodb nin yeni sürümü await ile birlikte callback kullanımına hata veriyor.bu sebeple ayırdık
     const user = await User.findOne({ email }); //email:email
+
     if (user) {
       bcrypt.compare(password, user.password, (err, same) => {
-
+        if (same) {
           //user session
           req.session.userID = user._id; //req.session altında userID adında değişken tanımladık ve buna login olan user'ın id değerini atadık
-
           res.status(200).redirect('/users/dashboard');
           //console.log(email,req.session.userID);
-
+        } else {
+          req.flash('error', 'Your password is not correct');
+          res.status(400).redirect('/login');
+        }
       });
+    } else {
+      req.flash('error', 'User is not exists!');
+      res.status(400).redirect('/login');
     }
   } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      error,
-    });
+    req.flash('error',`Hata ${error}`);
+    res.status(400).redirect('/login');
+
+    // res.status(400).json({
+    //   status: 'fail',
+    //   error,
+    // });
   }
 };
 
