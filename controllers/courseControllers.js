@@ -13,7 +13,7 @@ exports.createCourse = async (req, res) => {
       user: req.session.userID
     });
 
-    req.flash('success', `${Course.name} has been created succesfully`);
+    req.flash('success', `${course.name} has been created succesfully`);
     res.status(201).redirect('/courses')
 
     //frontend kısmı olmadığı zaman sadece backend kısmını aşağıdaki şekilde kodlarız.
@@ -124,6 +124,22 @@ exports.releaseCourse = async (req, res) => {
     await user.save(); 
   
     res.status(200).redirect('/users/dashboard');
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      error,
+    });
+  }
+};
+
+//delete kurs
+exports.deleteCourse = async (req, res) => {
+  try {
+
+    const course = await Course.findOneAndRemove({slug:req.params.slug});  
+    req.flash('error', `${course.name} has been deleted succesfully`);
+    res.status(200).redirect('/users/dashboard');
+
   } catch (error) {
     res.status(400).json({
       status: 'fail',

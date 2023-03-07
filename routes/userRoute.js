@@ -7,7 +7,7 @@ const User = require('../models/User');
 const router = express.Router();
 
 router.route('/signup').post( [
-    body('name').not().isEmpty().withMessage('Please Enter Your Name'),
+    body('name').not().isEmpty().withMessage('Please Enter Your Name'),//isim girip girilmediğini kontrol eder
 
     body('email').isEmail().withMessage('Please Enter Valid Email')
     .custom((userEmail) => {//email adresinin olup olmadığını kontrol ettik.
@@ -18,7 +18,7 @@ router.route('/signup').post( [
         })
     }),
 
-    body('password').not().isEmpty().withMessage('Please Enter A Password'),
+    body('password').not().isEmpty().withMessage('Please Enter A Password'),//parola girip girilmediğini kontrol
 
 ],authController.createUser); //http://localhost:3000/signup
 
