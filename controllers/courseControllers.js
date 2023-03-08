@@ -148,6 +148,31 @@ exports.deleteCourse = async (req, res) => {
   }
 };
 
+//update kurs
+exports.updateCourse = async (req, res) => {
+  try {
+
+    //1.yol
+    // const course = await Course.findOne({slug:req.params.slug});  
+    // course.name=req.body.name;
+    // course.description=req.body.description;
+    // course.category=req.body.category;
+    // course.save();
+
+    //2.yol
+    const course = await Course.findOneAndUpdate({slug:req.params.slug},req.body);  
+
+    req.flash('success', `${course.name} has been updated succesfully`);
+    res.status(200).redirect('/users/dashboard');
+
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      error,
+    });
+  }
+};
+
 //postman dan json şeklinde tüm verileri çekme test amaçlı
 exports.getAll = async ( req, res) => {
   try{
