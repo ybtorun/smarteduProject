@@ -80,7 +80,7 @@ exports.getDashboardPage = async (req, res) => {
   const user = await User.findOne({_id: req.session.userID}).populate('courses');//ilgili öğrencinin kurslarına gitmek için birleştirdik
   const categories = await Category.find(); //course oluşturuken category bilgisini de seçtirmek için çağırdık
   const courses = await Course.find({ user: req.session.userID }); //dashboard sayfasında her öğretmenin kendi kursunu görmesi
-  const users = await User.find();
+  const users = await User.find(); //admin kullanıcısının tüm kullanıcıları görebilmesi için
 
   res.status(200).render('dashboard', {
     page_name: 'dashboard',
@@ -94,12 +94,23 @@ exports.getDashboardPage = async (req, res) => {
 //delete user
 exports.deleteUser = async (req, res) => {
     try {
-      const user = await User.findByIdAndRemove(req.params.id);  
-    //  const user = await User.findOneAndRemove({_id:req.params.id});  
 
-    await Course.deleteMany({user});// await Course.deleteMany({user:req.params.id});
-     
-      req.flash('error', `${user.name} has been deleted succesfully`);
+    //öğrencilerin kurslarından silinecek öğretmenin kursları çıkarmak için 
+    const courses = await Course.find({ user: req.params.id });
+    const students = await User.find({ role: 'student' });
+    for (const student of students) {
+      for (const course of courses) {
+        if (student.courses.includes(course._id)) {
+          student.courses.pull(course);
+          await student.save();
+        }
+      }
+    }
+
+    const userdel = await User.findByIdAndRemove(req.params.id);  //{_id:req.params.id} //user ı  sildik  
+    await Course.deleteMany({user: req.params.id });// {user:req.params.id} //user ın kurslarını sildik
+
+      req.flash('error', `${userdel} has been deleted succesfully`);
       res.status(200).redirect('/users/dashboard');
   
     } catch (error) {
