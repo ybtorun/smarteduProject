@@ -110,7 +110,7 @@ exports.deleteUser = async (req, res) => {
     const userdel = await User.findByIdAndRemove(req.params.id);  //{_id:req.params.id} //user ı  sildik  
     await Course.deleteMany({user: req.params.id });// {user:req.params.id} //user ın kurslarını sildik
 
-      req.flash('error', `${userdel} has been deleted succesfully`);
+      req.flash('error', `${userdel.name} has been deleted succesfully`);
       res.status(200).redirect('/users/dashboard');
   
     } catch (error) {
